@@ -138,8 +138,8 @@ export default function ImageUploader({
               <Image
                 src={currentPreview as string}
                 alt="Preview"
-                width={100}
-                height={100}
+                width={350}
+                height={500}
                 className="w-full h-auto rounded-lg shadow-md"
               />
             </div>
