@@ -1,10 +1,17 @@
 import { embed } from "ai";
 import { google } from "@ai-sdk/google";
-import { pipeline, RawImage, type PipelineType } from "@xenova/transformers";
+import {
+  pipeline,
+  RawImage,
+  AutoTokenizer,
+  CLIPTextModelWithProjection,
+  type PipelineType
+} from "@xenova/transformers";
 import { PSACard } from "@/types/types";
 
 // Cache for CLIP models to avoid reloading
-let clipTextModel: Awaited<ReturnType<typeof pipeline>> | null = null;
+let clipTextTokenizer: Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>> | null = null;
+let clipTextModel: Awaited<ReturnType<typeof CLIPTextModelWithProjection.from_pretrained>> | null = null;
 let clipImageModel: Awaited<ReturnType<typeof pipeline>> | null = null;
 
 /**
@@ -90,24 +97,39 @@ export async function generateCLIPTextEmbedding(
   query: string
 ): Promise<number[]> {
   try {
-    // Load CLIP text model (cached after first load)
-    if (!clipTextModel) {
-      clipTextModel = await pipeline(
-        "feature-extraction",
+    // Load CLIP text tokenizer (cached after first load)
+    if (!clipTextTokenizer) {
+      clipTextTokenizer = await AutoTokenizer.from_pretrained(
         "Xenova/clip-vit-base-patch32"
       );
     }
 
-    // Generate embedding from text
-    const output = await clipTextModel(query, {
-      pooling: "mean",
-      normalize: true,
+    // Load CLIP text model (cached after first load)
+    if (!clipTextModel) {
+      clipTextModel = await CLIPTextModelWithProjection.from_pretrained(
+        "Xenova/clip-vit-base-patch32"
+      );
+    }
+
+    // Tokenize the text
+    const text_inputs = await clipTextTokenizer(query, {
+      padding: true,
+      truncation: true,
     });
 
-    // Extract the embedding array
-    const embedding = Array.from(output.data) as number[];
+    // Generate embeddings using the text model
+    const { text_embeds } = await clipTextModel(text_inputs);
 
-    return embedding;
+    // Extract and normalize the embedding array
+    const embedding = Array.from(text_embeds.data) as number[];
+
+    // Normalize the embedding (L2 normalization)
+    const norm = Math.sqrt(
+      embedding.reduce((sum, val) => sum + val * val, 0)
+    );
+    const normalizedEmbedding = embedding.map((val) => val / norm);
+
+    return normalizedEmbedding;
   } catch (error) {
     console.error("Error generating CLIP text embedding:", error);
     throw new Error("Failed to generate CLIP text embedding");
