@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { TextPart, TextStreamChatTransport } from "ai";
 
 export default function ChatInterface() {
   const [input, setInput] = useState("");
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const { messages, sendMessage, status } = useChat({
     transport: new TextStreamChatTransport({
@@ -14,14 +15,23 @@ export default function ChatInterface() {
   });
 
   const isLoading = status === "submitted" || status === "streaming";
+  
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages, isLoading]);
 
   // Helper function to extract text content from message parts
-  const getMessageText = (message: (typeof messages)[0]) => {
-    return message.parts
+  const getMessageText = (message: (typeof messages)[0]) =>
+    message.parts
       .filter((part) => part.type === "text")
       .map((part) => (part as TextPart).text)
       .join("");
-  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +56,10 @@ export default function ChatInterface() {
       </h2>
 
       {/* Chat Messages */}
-      <div className="mb-6 h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+      <div
+        ref={messagesContainerRef}
+        className="mb-6 h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50"
+      >
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-400">
             <div className="text-center">
@@ -85,9 +98,7 @@ export default function ChatInterface() {
                   <p className="text-sm font-semibold mb-1">
                     {message.role === "user" ? "You" : "Assistant"}
                   </p>
-                  <div className="whitespace-pre-wrap text-sm">
-                    {getMessageText(message)}
-                  </div>
+                  <MarkdownMessage text={getMessageText(message)} />
                 </div>
               </div>
             ))}
@@ -157,4 +168,69 @@ export default function ChatInterface() {
       </div>
     </div>
   );
+}
+
+function MarkdownMessage({ text }: { text: string }) {
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+
+  const flushList = () => {
+    if (listItems.length === 0) return;
+    elements.push(
+      <ul key={`list-${elements.length}`} className="list-disc pl-5 space-y-1">
+        {listItems.map((item, idx) => (
+          <li key={idx} className="leading-relaxed">
+            {renderInline(item)}
+          </li>
+        ))}
+      </ul>
+    );
+    listItems = [];
+  };
+
+  lines.forEach((line, idx) => {
+    const bulletMatch = line.match(/^\s*[\*\-]\s+(.*)/);
+    if (bulletMatch) {
+      listItems.push(bulletMatch[1]);
+      return;
+    }
+
+    // Blank line ends current list
+    if (line.trim() === "") {
+      flushList();
+      return;
+    }
+
+    flushList();
+    elements.push(
+      <p key={`paragraph-${idx}`} className="leading-relaxed">
+        {renderInline(line)}
+      </p>
+    );
+  });
+
+  flushList();
+
+  if (elements.length === 0) {
+    return <p className="leading-relaxed">{renderInline(text)}</p>;
+  }
+
+  return <div className="space-y-2 text-sm">{elements}</div>;
+}
+
+function renderInline(text: string) {
+  const segments = text.split(/(\*\*[^*]+\*\*)/g).filter((segment) => segment);
+
+  return segments.map((segment, idx) => {
+    if (segment.startsWith("**") && segment.endsWith("**")) {
+      return (
+        <strong key={idx} className="font-semibold">
+          {segment.slice(2, -2)}
+        </strong>
+      );
+    }
+
+    return <span key={idx}>{segment}</span>;
+  });
 }

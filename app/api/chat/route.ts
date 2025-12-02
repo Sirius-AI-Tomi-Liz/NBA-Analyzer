@@ -129,28 +129,31 @@ ${context}
 Answer the user's question based on the retrieved cards above. If the retrieved cards are relevant to their question, reference them specifically. If not, explain what you can see in the collection.`;
 
     // Transform ChatMessage[] to ModelMessage[] format expected by streamText
-    const transformedMessages = messages.map((msg) => {
-      // For messages with parts array
-      if (msg.parts && msg.parts.length > 0) {
-        const content = msg.parts
-          .filter((part) => part.type === "text" && part.text)
-          .map((part) => ({
-            type: "text" as const,
-            text: part.text!,
-          }));
+    // Filter out system messages as we're adding our own system prompt
+    const transformedMessages = messages
+      .filter((msg) => msg.role !== "system")
+      .map((msg) => {
+        // For messages with parts array
+        if (msg.parts && msg.parts.length > 0) {
+          const content = msg.parts
+            .filter((part) => part.type === "text" && part.text)
+            .map((part) => ({
+              type: "text" as const,
+              text: part.text!,
+            }));
 
+          return {
+            role: msg.role as "user" | "assistant",
+            content: content.length > 0 ? content : msg.content || "",
+          };
+        }
+
+        // For messages with simple content string
         return {
-          role: msg.role,
-          content: content.length > 0 ? content : msg.content || "",
+          role: msg.role as "user" | "assistant",
+          content: msg.content || "",
         };
-      }
-
-      // For messages with simple content string
-      return {
-        role: msg.role,
-        content: msg.content || "",
-      };
-    });
+      });
 
     // Step 4: Stream response using Vercel AI SDK
     const result = streamText({

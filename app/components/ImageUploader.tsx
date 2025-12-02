@@ -116,8 +116,8 @@ export default function ImageUploader({
           transition-all duration-200
           ${
             isDragging
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-300 hover:border-gray-400"
+              ? "border-[#bf1f24] bg-[#bf1f24]/10 shadow-xl"
+              : "border-gray-300 hover:border-[#0b1f40]"
           }
           ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
           ${currentPreview ? "bg-gray-50" : "bg-white"}
@@ -151,7 +151,7 @@ export default function ImageUploader({
           <div className="space-y-4">
             <div className="flex justify-center">
               <svg
-                className="w-16 h-16 text-gray-400"
+                className="w-16 h-16 text-[#0b1f40]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -165,7 +165,7 @@ export default function ImageUploader({
               </svg>
             </div>
             <div>
-              <p className="text-lg font-medium text-gray-700">
+              <p className="text-lg font-semibold text-[#0b1f40] tracking-wide">
                 Drop your PSA card image here
               </p>
               <p className="text-sm text-gray-500 mt-2">or click to browse</p>
