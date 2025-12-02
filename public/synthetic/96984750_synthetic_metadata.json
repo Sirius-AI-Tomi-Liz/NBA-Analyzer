@@ -1,0 +1,23 @@
+{
+  "originalCard": {
+    "player_name": "Victor Wembanyama",
+    "year": "2023",
+    "brand": "Prizm",
+    "psa_grade": 10,
+    "cert_number": "96984750",
+    "set_name": "Prizm",
+    "card_number": "#136"
+  },
+  "syntheticCard": {
+    "player_name": "Scottie Pippen",
+    "year": "2015-18",
+    "brand": "Upper Deck",
+    "psa_grade": 8,
+    "cert_number": "16144615",
+    "set_name": "Finest",
+    "card_number": "#120"
+  },
+  "imagePrompt": "Generate a highly realistic image of a PSA graded NBA basketball trading card.\n\nThe card details:\n- Player: Scottie Pippen\n- Year: 2015-18\n- Brand: Upper Deck\n- Set: Finest\n- Card Number: #120\n- PSA Grade: 8\n- Certification Number: 16144615\n\nThe card should be:\n1. Encased in a PSA slab holder (the iconic red PSA label at the top)\n2. The PSA label should show the grade \"8\" prominently\n3. The certification number \"16144615\" should be visible on the label\n\nScene setting:\n- Place the card on a wooden desk or collector's display\n- Surround it with other trading cards, card sleeves, or collectibles\n- Professional photography lighting\n- Slight depth of field effect\n- High detail and photorealistic quality\n\nImportant: This is a synthetic/demonstration image with fictional card data.",
+  "generatedMetadata": "```json\n{\n  \"title\": \"Synthetic Scottie Pippen 2015-18 Upper Deck Finest PSA Graded Card\",\n  \"scene_description\": \"A photorealistic image of a Scottie Pippen basketball trading card encased in a PSA slab. The red PSA label at the top of the slab clearly displays the grade '8' and the certification number '16144615'. The lighting is professional, creating highlights and shadows that emphasize the card's details. A slight depth of field effect blurs the background, focusing attention on the card itself.\",\n  \"card_details\": {\n    \"player\": \"Scottie Pippen\",\n    \"year\": \"2015-18\",\n    \"brand\": \"Upper Deck\",\n    \"set\": \"Finest\",\n    \"card_number\": \"#120\",\n    \"psa_grade\": \"8\",\n    \"certification_number\": \"16144615\"\n  },\n  \"environment\": {\n    \"surface\": \"Wooden desk or collector's display surface\",\n    \"surroundings\": \"Scattered around the card are other trading cards in protective sleeves, stacks of unopened card packs, and various sports memorabilia collectibles to enhance the 'collector's item' feel. Soft, diffused lighting creates a professional photography setup.\",\n\t\"lighting\": \"Professional photography lighting with soft, diffused light to avoid harsh reflections and showcase card details.\",\n\t\"depth_of_field\": \"Slight depth of field to blur the background and focus attention on the graded card.\"\n  }\n}\n```\n",
+  "createdAt": "2025-12-02T22:22:00.847Z"
+}

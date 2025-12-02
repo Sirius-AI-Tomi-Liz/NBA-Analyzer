@@ -10,7 +10,14 @@ export interface PSACard {
 
 export interface AnalysisSuccess {
   success: true;
-  data: PSACard;
+  data: PSACard & {
+    description?: string;
+    cert_url?: string;
+    image_path?: string;
+    synthetic_document_path?: string;
+    synthetic_card_data?: PSACard;
+    audio_narration_path?: string;
+  };
 }
 
 export interface AnalysisError {

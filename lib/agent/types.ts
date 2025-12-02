@@ -28,7 +28,14 @@ export interface AgentState {
   textEmbedding?: number[]; // 768d text embedding
   imageEmbedding?: number[]; // 512d image embedding
   imagePath?: string; // Path to saved image
-  
+
+  // Synthetic document generation
+  syntheticDocumentPath?: string; // Path to generated synthetic document image
+  syntheticCardData?: PSACard; // Dummy data used for synthetic document
+
+  // Audio narration
+  audioNarrationPath?: string; // Path to generated audio narration file
+
   // Final result
   finalResult?: {
     success: boolean;

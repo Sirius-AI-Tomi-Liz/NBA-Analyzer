@@ -205,7 +205,7 @@ Return only the final description text.`;
       webSearchResults: webSearchSummary,
       currentStep: "describe_card_completed",
       ...(mergedErrors ? { errors: mergedErrors } : {}),
-      next: "generate_embeddings",
+      next: "generate_synthetic_document",
     };
   } catch (error) {
     console.error("❌ Error in describe_card:", error);
@@ -221,7 +221,7 @@ Return only the final description text.`;
       webSearchResults: state.webSearchResults,
       currentStep: "describe_card_failed",
       errors: [...(state.errors || []), error instanceof Error ? error.message : "Description failed"],
-      next: "generate_embeddings", // Continue anyway
+      next: "generate_synthetic_document", // Continue to synthetic document generation
     };
   }
 }

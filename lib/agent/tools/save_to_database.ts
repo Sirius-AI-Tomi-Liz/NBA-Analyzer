@@ -3,14 +3,23 @@ import { storeCard } from "@/lib/pinecone";
 import { AgentState } from "../types";
 
 /**
- * Tool 6: Save to Database
+ * Tool 8: Save to Database
  * Persists all card information to Pinecone and saves image locally
  */
 export async function saveToDatabase(state: AgentState): Promise<Partial<AgentState>> {
   console.log("🔧 Tool: save_to_database - Persisting card to database...");
   
   try {
-    const { validationResult, imageData, textEmbedding, imageEmbedding, description } = state;
+    const {
+      validationResult,
+      imageData,
+      textEmbedding,
+      imageEmbedding,
+      description,
+      syntheticDocumentPath,
+      syntheticCardData,
+      audioNarrationPath,
+    } = state;
     
     if (!validationResult?.is_valid || !validationResult.card_data) {
       throw new Error("No valid card data to save");
@@ -36,12 +45,15 @@ export async function saveToDatabase(state: AgentState): Promise<Partial<AgentSt
     await storeCard(card, imagePath, textEmbedding, imageEmbedding);
     console.log(`✅ Card stored in Pinecone: ${card.cert_number}`);
     
-    // Build final success result
+    // Build final success result with all generated content
     const finalResult = {
       success: true,
       card,
       description,
       imagePath,
+      syntheticDocumentPath,
+      syntheticCardData,
+      audioNarrationPath,
     };
     
     console.log(`🎉 Card processing completed successfully!`);

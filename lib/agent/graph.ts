@@ -5,19 +5,23 @@ import { getCardInfo } from "./tools/get_card_info";
 import { validateNBACard } from "./tools/validate_nba_card";
 import { certifyCard } from "./tools/certify_card";
 import { describeCard } from "./tools/describe_card";
+import { generateSyntheticDocument } from "./tools/generate_synthetic_document";
+import { generateAudioNarration } from "./tools/generate_audio_narration";
 import { generateEmbeddings } from "./tools/generate_embeddings";
 import { saveToDatabase } from "./tools/save_to_database";
 
 /**
  * LangGraph State Machine for PSA Card Processing
- * 
+ *
  * Flow:
  * 1. get_card_info: Process uploaded image
  * 2. validate_nba_card: Validate and extract card data using AI
  * 3. certify_card: Verify PSA certification
  * 4. describe_card: Create rich description (optional web search)
- * 5. generate_embeddings: Create text and image embeddings
- * 6. save_to_database: Persist to Pinecone and save image
+ * 5. generate_synthetic_document: Create synthetic card image with dummy data
+ * 6. generate_audio_narration: Generate professional audio narration
+ * 7. generate_embeddings: Create text and image embeddings
+ * 8. save_to_database: Persist to Pinecone and save image
  */
 
 /**
@@ -27,7 +31,7 @@ function routeNext(state: AgentState): string {
   if (state.next === "end" || state.next === END) {
     return END;
   }
-  
+
   return state.next || END;
 }
 
@@ -45,6 +49,9 @@ const AgentAnnotation = Annotation.Root({
   textEmbedding: Annotation<number[] | undefined>,
   imageEmbedding: Annotation<number[] | undefined>,
   imagePath: Annotation<string | undefined>,
+  syntheticDocumentPath: Annotation<string | undefined>,
+  syntheticCardData: Annotation<any>,
+  audioNarrationPath: Annotation<string | undefined>,
   currentStep: Annotation<string | undefined>,
   errors: Annotation<string[]>,
   next: Annotation<string | undefined>,
@@ -63,6 +70,8 @@ export function createPSACardAgent() {
   workflow.addNode("validate_nba_card", validateNBACard);
   workflow.addNode("certify_card", certifyCard);
   workflow.addNode("describe_card", describeCard);
+  workflow.addNode("generate_synthetic_document", generateSyntheticDocument);
+  workflow.addNode("generate_audio_narration", generateAudioNarration);
   workflow.addNode("generate_embeddings", generateEmbeddings);
   workflow.addNode("save_to_database", saveToDatabase);
 
@@ -74,6 +83,8 @@ export function createPSACardAgent() {
   workflow.addConditionalEdges("validate_nba_card", routeNext);
   workflow.addConditionalEdges("certify_card", routeNext);
   workflow.addConditionalEdges("describe_card", routeNext);
+  workflow.addConditionalEdges("generate_synthetic_document", routeNext);
+  workflow.addConditionalEdges("generate_audio_narration", routeNext);
   workflow.addConditionalEdges("generate_embeddings", routeNext);
   workflow.addConditionalEdges("save_to_database", routeNext);
 
@@ -92,10 +103,12 @@ export async function executePSACardAgent(input: {
 }): Promise<AgentState> {
   console.log("🚀 Starting PSA Card Agent...");
   console.log(`📝 User hint: ${input.userHint || "none"}`);
-  console.log(`🔍 Web search: ${input.shouldWebSearch ? "enabled" : "disabled"}`);
-  
+  console.log(
+    `🔍 Web search: ${input.shouldWebSearch ? "enabled" : "disabled"}`
+  );
+
   const agent = createPSACardAgent();
-  
+
   const initialState: AgentState = {
     imageData: input.imageData,
     mimeType: input.mimeType,
@@ -103,24 +116,24 @@ export async function executePSACardAgent(input: {
     shouldWebSearch: input.shouldWebSearch || false,
     errors: [],
   };
-  
+
   try {
     const finalState = await agent.invoke(initialState);
     console.log("✅ PSA Card Agent completed");
     return finalState;
   } catch (error) {
     console.error("❌ PSA Card Agent failed:", error);
-    
+
     // Return error state
     return {
       ...initialState,
       finalResult: {
         success: false,
         error: "agent_failed",
-        reason: error instanceof Error ? error.message : "Agent execution failed",
+        reason:
+          error instanceof Error ? error.message : "Agent execution failed",
       },
       errors: [error instanceof Error ? error.message : "Unknown error"],
     };
   }
 }
-

@@ -1,0 +1,23 @@
+{
+  "originalCard": {
+    "player_name": "LaMELO Ball",
+    "year": "2020",
+    "brand": "Panini",
+    "psa_grade": 10,
+    "cert_number": "63074853",
+    "set_name": "SELECT",
+    "card_number": "#63"
+  },
+  "syntheticCard": {
+    "player_name": "Isiah Thomas",
+    "year": "1998-86",
+    "brand": "Donruss",
+    "psa_grade": 9,
+    "cert_number": "40889992",
+    "set_name": "Finest",
+    "card_number": "#252"
+  },
+  "imagePrompt": "A professional photograph of a PSA graded NBA basketball trading card on a wooden collector's desk.\n\nThe card details:\n- Player: Isiah Thomas\n- Year: 1998-86\n- Brand: Donruss\n- Set: Finest\n- PSA Grade: 9\n\nThe card is encased in an authentic PSA slab holder with the iconic red PSA label at the top showing the grade. The card sits on a rich wooden desk surrounded by other trading cards and collectibles. Professional studio lighting with soft shadows. Photorealistic, high detail, 4K quality.",
+  "error": "{\"error\":{\"code\":404,\"message\":\"models/imagen-3.0-generate-002 is not found for API version v1beta, or is not supported for predict. Call ListModels to see the list of available models and their supported methods.\",\"status\":\"NOT_FOUND\"}}",
+  "createdAt": "2025-12-02T22:35:07.269Z"
+}

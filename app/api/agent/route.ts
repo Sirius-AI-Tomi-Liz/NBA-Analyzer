@@ -90,6 +90,10 @@ export async function POST(req: NextRequest) {
           description: finalState.description,
           image_path: finalState.imagePath,
           cert_url: finalState.certificationResult?.cert_url,
+          // New fields for synthetic document and audio narration
+          synthetic_document_path: finalState.syntheticDocumentPath,
+          synthetic_card_data: finalState.syntheticCardData,
+          audio_narration_path: finalState.audioNarrationPath,
         },
       };
 
